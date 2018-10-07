@@ -1,0 +1,186 @@
+Name: Bhuvanesh Shukla
+Roll No. 16BCE0219
+Course: D.B.M.S. Lab
+==============================================
+Exercise:7
+==============================================
+
+Q.1 Write a PL/SQL block to change address of a particular employee by taking his/her employee number interactively.
+
+CODE:
+SQL> declare
+  2  ssn varchar2(9);
+  3  addr varchar2(50);
+  4  BEGIN
+  5  ssn:='&ssn';
+  6  addr:='&addr';
+  7  update Employee set Address = addr where SSN_Number=ssn;
+  8  dbms_output.put_line('ADDRESS'||'-'||addr);
+  9  dbms_output.put_line('SSN_NUMBER'||'-'||ssn);
+ 10  end;
+ 11  /
+OUTPUT:
+Enter value for ssn: 123456789
+old   5: ssn:='&ssn';
+new   5: ssn:='123456789';
+Enter value for addr: 291 Berry, Bellaire, TX
+old   6: addr:='&addr';
+new   6: addr:='291 Berry, Bellaire, TX';
+
+PL/SQL procedure successfully completed.
+================================================
+Q.2 Write a PL/SQL block to display number of employees for each department.
+
+CODE:
+SQL> declare 
+  2  no_of_emp number;
+  3  dep_number number;
+  4  cursor emp_dep is select count(SSN_Number), Department_Number from Employee group by Department_Number;
+  5  BEGIN
+  6  dbms_output.put_line('Number of employees'||'    '||'Department number');
+  7  open emp_dep;
+  8  loop       
+  9  fetch emp_dep into no_of_emp,dep_number;
+ 10  exit when emp_dep%notfound;
+ 11  dbms_output.put_line('      '||no_of_emp||'dep_number');       
+ 12  end loop;
+ 13  close emp_dep;
+ 14  end;
+ 15  /
+OUTPUT:
+
+Number of employees      Department number
+	  2			  1 
+	  3			  5
+	  3			  4
+	  3			  3
+=================================================
+Q.3 Write a program to delete employee details who are having age >60.
+
+CODE:
+SQL> declare
+  2  cursor c is select SSN_Number from Employee where abs(months_between(sysdate,Birthday)/12)>60;
+  3  ssn varchar2(9);
+  4  BEGIN
+  5  open c;
+  6  loop
+  7  fetch c into ssn;
+  8  delete from Employee where SSN_Number=ssn;
+  9  exit when c%notfound;
+ 10  end loop;
+ 11  close c;
+ 12  end;
+ 13  /
+OUTPUT:
+
+PL/SQL procedure successfully completed.
+================================================
+Q.4 Write a PL/SQL block to display employees who are top three earners in the company.
+
+CODE:
+SQL> declare
+  2  cursor c is select SSN_Number,max(Salary) from Employee where group by SSN_Number;
+  3  ssn varchar2(9);
+  4  sal number;
+  4  counter number=2;
+  5  begin
+  6  loop
+  7  open c;
+  8  loop
+  9  fetch c into ssn,sal;
+ 10  exit when c%notfound;
+ 11  dbms_output.put_line(ssn||'-'||sal);
+ 12  end loop;
+ 13  close c;
+ 14  counter--;
+ 15  exit when counter<0;
+ 16  end loop;
+ 17  end;
+ 18  /
+
+OUTPUT:
+554433221-80000
+543216789-70000
+888665555-55000
+================================================
+Q.5 Write a PL/SQL to delete a records whose basic salary is <20000 from Emp table.
+
+CODE:
+SQL> BEGIN
+  2  delete from Employee where Employee.Salary<20000;
+  3  dbms_output.put_line('record deleted');
+  4  end;
+  5  /
+OUTPUT:
+
+PL/SQL procedure successfully completed.
+
+
+================================================
+Exercise:8
+================================================
+Q.1 Write a PL/SQL block to find the greatest of three numbers.
+
+CODE:
+SQL> set serveroutput on;
+SQL> declare 
+  2  a number; b number; c number;
+  3  begin
+  4  a:=&a; b:=&b; c:=&c;
+  5  if(a>b) and (a>c) then dbms_output.put_line('a is greatest');
+  6  elsif(b>c) and (b>a) then dbms_output.put_line('b is the greatest');
+  7  else dbms_output.put_line('c is the greatest');
+  8  end if;
+  9  end;
+ 10  /
+OUTPUT:
+Enter value for a: 12
+Enter value for b: 33
+Enter value for c: 89
+old   4: a:=&a; b:=&b; c:=&c;
+new   4: a:=12; b:=33; c:=89;
+c is the greatest
+================================================
+Q.2 Write a PL/SQL code to print the employee’s cadre based on their basic scales as given below
+(hint use: case selector....)
+Basic Scale		Cadre
+45000 			Manager
+35000			Supervisor
+25000			Worker
+
+CODE:
+SQL> declare 
+  2  cursor c is select SSN_Number,Salary from Employee;
+  3  ssn varchar2(9);
+  4  salary number;
+  5  begin
+  6  open c;
+  7  loop
+  8  fetch c into ssn,salary;
+  9  case salary
+ 10  when 45000 then dbms_output.put_line(ssn||'-'||'manager');
+ 11  	when 35000 then dbms_output.put_line(ssn||'-'||'supervisor');
+ 12  	when 2500 then dbms_output.put_line(ssn||'-'||'worker');
+ 13  	else dbms_output.put_line(ssn||'-'||'No such cadre available');
+ 14  end case;
+ 15  exit when c%notfound;
+ 16  end loop;
+ 17  close c;
+ 18  end;
+ 19  /
+
+OUTPUT:
+554433221-No such cadre available
+543216789-No such cadre available
+333445555-No such cadre available
+987654321-No such cadre available
+123456789-No such cadre available
+666884444-No such cadre available
+453453453-No such cadre available
+888665555-No such cadre available
+999887777-No such cadre available
+987987987-No such cadre available
+987987987-No such cadre available
+
+PL/SQL procedure successfully completed.
+================================================
